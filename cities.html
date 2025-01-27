@@ -224,6 +224,24 @@
             padding-top: 5px;
             border-top: 1px solid #eee;
         }
+
+        .reset-defaults-btn {
+            width: 100%;
+            padding: 8px;
+            margin-top: 15px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #f8f8f8;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .reset-defaults-btn:hover {
+            background-color: #f0f0f0;
+            border-color: #999;
+        }
     </style>
 </head>
 <body>
@@ -355,6 +373,7 @@
                         </div>
                     </div>
                 </div>
+                <button id="reset-defaults-btn" class="reset-defaults-btn">Reset to Default Values</button>
             </div>
         </div>
     </div>
@@ -1198,6 +1217,17 @@
                             }
                         });
                     });
+                });
+
+                // Add reset to defaults button handler
+                document.getElementById('reset-defaults-btn').addEventListener('click', () => {
+                    // Create a deep copy of default values
+                    costConfig = JSON.parse(JSON.stringify(defaultCostConfig));
+                    saveCostConfig();
+                    updateCostInputs();
+                    if (uniqueCities.length > 0) {
+                        updateCityList(uniqueCities);
+                    }
                 });
             } catch (error) {
                 console.error('Map initialization error:', error);

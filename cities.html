@@ -554,12 +554,39 @@
                 }
 
                 // Cost configurations
-                let costConfig = {
+                const defaultCostConfig = {
                     'Major City': { ald: 100, adspend: 1500 },
                     'Large City': { ald: 75, adspend: 1200 },
                     'Medium City': { ald: 50, adspend: 750 },
                     'Small City': { ald: 25, adspend: 500 }
                 };
+
+                // Load saved cost config from localStorage or use defaults
+                let costConfig = JSON.parse(localStorage.getItem('costConfig')) || defaultCostConfig;
+
+                // Update input fields with saved values
+                function updateCostInputs() {
+                    const cityTypes = ['major', 'large', 'medium', 'small'];
+                    const costTypes = ['ald', 'adspend'];
+                    
+                    cityTypes.forEach(cityType => {
+                        const cityKey = cityType.charAt(0).toUpperCase() + cityType.slice(1) + ' City';
+                        costTypes.forEach(costType => {
+                            const input = document.getElementById(`${cityType}-${costType}`);
+                            if (input) {
+                                input.value = costConfig[cityKey][costType];
+                            }
+                        });
+                    });
+                }
+
+                // Save cost config to localStorage
+                function saveCostConfig() {
+                    localStorage.setItem('costConfig', JSON.stringify(costConfig));
+                }
+
+                // Initialize cost inputs with saved values
+                updateCostInputs();
 
                 // Function to categorize city by population
                 function getCityCategory(population) {
@@ -1163,6 +1190,7 @@
                             const value = parseInt(input.value) || 0;
                             const cityKey = cityType.charAt(0).toUpperCase() + cityType.slice(1) + ' City';
                             costConfig[cityKey][costType] = value;
+                            saveCostConfig();
                             
                             // Update the display if cities are selected
                             if (uniqueCities.length > 0) {

@@ -733,6 +733,7 @@ const ukTownsAndCities = [
     { name: "York", phoneCode: "01904", population: 153717, latitude: 53.9600, longitude: -1.0873 },
     { name: "Chester", phoneCode: "01244", population: 118200, latitude: 53.1905, longitude: -2.8912 },
     { name: "Ellesmere Port", phoneCode: "0151", population: 55715, latitude: 53.2788, longitude: -2.8961 }
+    { name: "Lutterworth", phoneCode: "", population: 0, latitude: 52.4552224, longitude: -1.1997815 },
 ];
 
 // Export functions and data globally

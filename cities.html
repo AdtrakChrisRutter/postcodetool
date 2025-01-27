@@ -919,67 +919,58 @@
                 // Function to update city list display
                 function updateCityList(cities) {
                     const cityList = document.getElementById('city-list');
-                    const csvBtn = document.getElementById('download-csv-btn');
-                    const xlsBtn = document.getElementById('download-xls-btn');
-                    const pdfBtn = document.getElementById('download-pdf-btn');
+                    cityList.innerHTML = '';
 
                     if (cities.length === 0) {
                         cityList.innerHTML = '<div class="no-results">Draw a shape to select cities.</div>';
-                        csvBtn.disabled = true;
-                        xlsBtn.disabled = true;
-                        pdfBtn.disabled = true;
                         return;
                     }
 
-                    // Sort cities by population (highest to lowest)
-                    const sortedCities = [...cities].sort((a, b) => b.population - a.population);
-                    uniqueCities = sortedCities;
-                    
-                    const showAld = document.getElementById('ald-toggle').checked;
-                    const showAdspend = document.getElementById('adspend-toggle').checked;
-                    
-                    cityList.innerHTML = sortedCities.map(city => {
-                        const category = getCityCategory(city.population);
-                        const costs = costConfig[category];
-                        return `<div class="city-item" data-city-name="${city.name}">
-                            <button class="remove-city" aria-label="Remove ${city.name}">&times;</button>
-                            <div class="city-header">
-                                <div class="city-name">${city.name} (${city.phoneCode})</div>
-                            </div>
-                            <div class="city-details">
-                                <div class="detail-row">
-                                    <span class="detail-label">Population:</span>
-                                    <span class="detail-value">${city.population.toLocaleString()}</span>
+                    let totalALD = 0;
+                    let totalAdspend = 0;
+
+                    cities.forEach(city => {
+                        const cityCategory = getCityCategory(city.population);
+                        const costs = costConfig[cityCategory];
+                        
+                        const cityElement = document.createElement('div');
+                        cityElement.className = 'city-item';
+                        cityElement.innerHTML = `
+                            <div class="city-info">
+                                <div class="city-name">${city.name}</div>
+                                <div class="city-details">
+                                    <span class="phone-code">Area Code: ${city.phoneCode}</span>
+                                    <span class="population">Population: ${city.population.toLocaleString()}</span>
                                 </div>
-                                ${showAld ? `
-                                <div class="detail-row">
-                                    <span class="detail-label">ALD License:</span>
-                                    <span class="detail-value cost-value">£${costs.ald}</span>
-                                </div>` : ''}
-                                ${showAdspend ? `
-                                <div class="detail-row">
-                                    <span class="detail-label">Suggested Adspend:</span>
-                                    <span class="detail-value cost-value">£${costs.adspend}</span>
-                                </div>` : ''}
+                                <div class="city-costs">
+                                    <span class="ald-cost">ALD License: £${costs.ald}</span>
+                                    <span class="adspend-cost">Adspend: £${costs.adspend}</span>
+                                </div>
                             </div>
-                        </div>`;
-                    }).join('');
-
-                    // Update totals box
-                    updateTotalsBox();
-
-                    // Add event listeners for remove buttons
-                    document.querySelectorAll('.remove-city').forEach(button => {
-                        button.addEventListener('click', function(e) {
-                            const cityItem = e.target.closest('.city-item');
-                            const cityName = cityItem.dataset.cityName;
-                            removeCity(cityName);
-                        });
+                        `;
+                        
+                        totalALD += costs.ald;
+                        totalAdspend += costs.adspend;
+                        
+                        cityList.appendChild(cityElement);
                     });
 
-                    csvBtn.disabled = false;
-                    xlsBtn.disabled = false;
-                    pdfBtn.disabled = false;
+                    // Update totals
+                    document.getElementById('totals-content').innerHTML = `
+                        <div class="total-item">
+                            <span class="total-label">Total ALD License:</span>
+                            <span class="total-value" id="total-ald">£${totalALD}</span>
+                        </div>
+                        <div class="total-item">
+                            <span class="total-label">Total Adspend:</span>
+                            <span class="total-value" id="total-adspend">£${totalAdspend}</span>
+                        </div>
+                    `;
+
+                    // Enable download buttons
+                    document.getElementById('download-csv-btn').disabled = false;
+                    document.getElementById('download-xls-btn').disabled = false;
+                    document.getElementById('download-pdf-btn').disabled = false;
                 }
 
                 // Reset map functionality

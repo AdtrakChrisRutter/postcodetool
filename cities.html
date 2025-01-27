@@ -184,6 +184,46 @@
             font-size: 18px;
             padding-left: 5px;
         }
+
+        .city-item {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            padding: 10px;
+            position: relative;
+        }
+
+        .city-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .city-name {
+            font-weight: bold;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .city-details {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .city-costs {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+            padding-top: 5px;
+            border-top: 1px solid #eee;
+        }
     </style>
 </head>
 <body>
@@ -387,16 +427,7 @@
                         circlemarker: false,
                         marker: false
                     },
-                    edit: {
-                        featureGroup: drawnItems,
-                        remove: true,
-                        edit: {
-                            selectedPathOptions: {
-                                maintainColor: true,
-                                opacity: 0.3
-                            }
-                        }
-                    }
+                    edit: false
                 });
                 map.addControl(drawControl);
 
@@ -858,61 +889,6 @@
                     const hasCircles = drawnItems.getLayers().some(layer => layer instanceof L.Circle);
                     if (!hasCircles) {
                         document.getElementById('diameter-control').style.display = 'none';
-                    }
-                });
-
-                map.on('draw:edited', function(e) {
-                    const layers = e.layers;
-                    layers.eachLayer(function(layer) {
-                        // Update cities within edited shape
-                        const selectedCities = [];
-                        ukTownsAndCities.forEach(city => {
-                            const latLng = L.latLng(city.latitude, city.longitude);
-                            if (layer.getBounds().contains(latLng)) {
-                                selectedCities.push(city);
-                            }
-                        });
-                        
-                        // Update unique cities list
-                        uniqueCities = selectedCities;
-                        
-                        // Update markers
-                        cityMarkers.forEach(({ marker, layer }, cityName) => {
-                            map.removeLayer(layer);
-                            cityMarkers.delete(cityName);
-                        });
-                        
-                        selectedCities.forEach(city => {
-                            addRegularMarker(city);
-                        });
-                    });
-                    
-                    // Update the city list display
-                    updateCityList(uniqueCities);
-                    
-                    // Update available cities
-                    updateAllAvailableCities();
-                });
-
-                // Remove hover handlers and update for permanent display
-                map.on('layeradd', (e) => {
-                    const layer = e.layer;
-                    if (layer instanceof L.Rectangle || layer instanceof L.Circle || layer instanceof L.Polygon) {
-                        // Handle shape movement
-                        layer.on('move', () => {
-                            if (layer._map) {
-                                updateAllAvailableCities();
-                            }
-                        });
-                        
-                        // Handle shape resize
-                        if (layer.editing && layer.editing.enable) {
-                            layer.on('edit', () => {
-                                if (layer._map) {
-                                    updateAllAvailableCities();
-                                }
-                            });
-                        }
                     }
                 });
 
